@@ -1,6 +1,4 @@
 <?php
-$startTime = microtime(true);
-require_once __DIR__ . '/../vendor/autoload.php';
 
 // This is the default config. See `deploy_config/README.md' for more info.
 $config = array(
@@ -13,6 +11,8 @@ $config = array(
     'twig.options' => array(
         'cache' => __DIR__ . '/cache/twig',
     ),
+    'securefile.path' => __DIR__ . '/resources/securefiles',
+    'securefile.systempath' => __DIR__ . '/resources/securefiles/system',
 );
 
 // Apply custom config if available
@@ -22,7 +22,15 @@ if (file_exists(__DIR__ . '/config.php')) {
 
 // Initialize Application
 $app = new App\Silex\Application($config);
-
+/*
+$app->register(new Silex\Provider\ServiceControllerServiceProvider());
+$app->register(new Silex\Provider\TwigServiceProvider());
+$app->register(new Silex\Provider\UrlGeneratorServiceProvider());
+$app->register(new Silex\Provider\WebProfilerServiceProvider(), array(
+    'profiler.cache_dir' => __DIR__.'/cache/profiler',
+    'profiler.mount_prefix' => '/_profiler', // this is the default
+));
+*/
 /**
  * Register controllers as services
  * @link http://silex.sensiolabs.org/doc/providers/service_controller.html
