@@ -1,9 +1,9 @@
-id: 5
-title: Nos mots de passe partagés
-desc: Mon premier fichier
+id: '5'
+title: 'Nos mots de passe partagés'
+desc: 'Mon premier fichier'
 authors:
     - Nicolas
-    - Camille
-content: du contenu
-created_at: '2015-03-05T15:19:21+00:00'
-updated_at: '2015-06-05T15:19:21+00:00'
+    - '    Camille'
+content: W2T+EhomSvBfdogW+9mH30VFYd8J9caGpQpPq0z34v3Kuh7UI5693ZPgrzf6iVOGtpg5NkGtsrCTp+tMkPV2yQ==
+created_at: null
+updated_at: null

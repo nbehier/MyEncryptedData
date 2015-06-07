@@ -10,9 +10,7 @@ $config = array(
     'twig.path' => __DIR__ . '/../src/App/views',
     'twig.options' => array(
         'cache' => __DIR__ . '/cache/twig',
-    ),
-    'securefile.path' => __DIR__ . '/resources/securefiles',
-    'securefile.systempath' => __DIR__ . '/resources/securefiles/system',
+    )
 );
 
 // Apply custom config if available
@@ -22,6 +20,13 @@ if (file_exists(__DIR__ . '/config.php')) {
 
 // Initialize Application
 $app = new App\Silex\Application($config);
+$app->register(new Silex\Provider\TranslationServiceProvider());
+$app['translator'] = $app->share($app->extend('translator', function ($translator, $app) {
+    $translator->addLoader('yaml', new Symfony\Component\Translation\Loader\YamlFileLoader());
+    $translator->addResource('yaml', __DIR__.'/resources/locales/fr.yml', 'fr');
+    return $translator;
+}));
+
 /*
 $app->register(new Silex\Provider\ServiceControllerServiceProvider());
 $app->register(new Silex\Provider\TwigServiceProvider());

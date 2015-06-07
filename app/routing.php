@@ -9,5 +9,7 @@
  */
 
 $app->get('/', 'app.default_controller:indexAction');
-$app->get('/encrypt', 'app.default_controller:encryptAction');
-$app->get('/decrypt', 'app.default_controller:decryptAction');
+$app->get('/documents', 'app.default_controller:getDocumentsAction');
+$app->post('/documents/{id}/encrypt', 'app.default_controller:encryptAction');
+$app->post('/documents/new', 'app.default_controller:encryptAction');
+$app->post('/documents/{id}/decrypt', 'app.default_controller:decryptAction');

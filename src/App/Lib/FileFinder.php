@@ -22,6 +22,7 @@ class FileFinder
                 $oFile = new EncryptFile();
                 $oFile->setPath($sPath);
                 $oFile->load($file->getContents() );
+                $oFile->setContent('');
 
                 $aFiles[] = $oFile->toArray();
             }
@@ -34,6 +35,39 @@ class FileFinder
     }
 
     /**
+     * Get YAML file
+     */
+    public static function getFile($sPath, $sName, $sPassphrase, $sSystemPassphrase)
+    {
+        $finder = new Finder();
+        $finder->files()->in($sPath)->depth('== 0')->name($sName . '.yml');
+
+        if (iterator_count($finder) == 0) { return false; }
+
+        $oFile = null;
+        foreach ($finder as $file) {
+            $oFile = new EncryptFile();
+            $oFile->setPath($sPath);
+            $oFile->setPassphrase($sPassphrase);
+            $oFile->setSystemPassphrase($sSystemPassphrase);
+            $oFile->load($file->getContents() );
+        }
+
+        return $oFile;
+    }
+
+    /**
+     * Save YAML file
+     */
+    public static function saveFile($aDatas, $sPassphrase, $sSystemPath, $sSystemPassphrase)
+    {
+        $encryptedFile = new EncryptFile($aDatas, $sPassphrase, $sSystemPassphrase, $sSystemPath);
+        $encryptedFile->dump($sPassphrase);
+
+        return $encryptedFile;
+    }
+
+    /**
      * Get max numeric name file and increment
      */
     public static function getNewId($sPath)
@@ -43,8 +77,9 @@ class FileFinder
 
         if (! empty($aList)) {
             foreach ($aList as $value) {
-                if (is_numeric($value) && $value > $iId) {
-                    $iId = $value;
+                $sBasename = basename($value, '.yml');
+                if (is_numeric($sBasename) && $sBasename > $iId) {
+                    $iId = $sBasename;
                 }
             }
         }
@@ -60,7 +95,8 @@ class FileFinder
         $aList = self::listFiles($sPath, false);
         if (! empty($aList)) {
             foreach ($aList as $value) {
-                if (strcmp($value, $sName) == 0) { return true; }
+                $sBasename = basename($value, '.yml');
+                if (strcmp($sBasename, $sName) == 0) { return true; }
             }
         }
 

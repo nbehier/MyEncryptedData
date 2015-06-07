@@ -2,6 +2,7 @@ app/config.php
 
 app/cache
 app/log
+app/resources/securefiles
 
 build
 node_modules

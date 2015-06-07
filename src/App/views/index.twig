@@ -1,13 +1,14 @@
 {% extends 'layout.twig' %}
-{% block title %}Liste des documents{% endblock %}
+{% block title %}{{ 'DocumentsList'|trans }}{% endblock %}
 
 {% block content %}
 <div id="layout" class="content pure-g">
+
     <div id="nav" class="pure-u">
-        <a href="#" class="nav-menu-button">Menu</a>
+        <a href="#" class="nav-menu-button">{{ 'Menu'|trans }}</a>
 
         <div class="nav-inner">
-            <button class="primary-button pure-button">Compose</button>
+            <button class="primary-button pure-button">{{ 'Compose'|trans }}</button>
 
             <div class="pure-menu">
                 <ul class="pure-menu-list">
@@ -26,86 +27,80 @@
     </div>
 
     <div id="list" class="pure-u-1">
-        {% for file in file_list %}
-            <div id="file-{{ file.id }}" class="email-item email-item-selected email-item-unread pure-g">
-                {#
-                <div class="pure-u">
-                    <img class="email-avatar" alt="Tilo Mitra&#x27;s avatar" height="64" width="64" src="img/common/tilo-avatar.png">
-                </div>
-                #}
-
-                <div class="pure-u-3-4">
-                    <h5 class="email-name">{{ file.authors|join(', ') }}</h5>
-                    <h4 class="email-subject">{{ file.title }}</h4>
-                    <p class="email-desc">
-                        {{ file.desc }}
-                    </p>
-                </div>
-            </div>
-        {% else %}
-            No users have been found.
-        {% endfor %}
     </div>
 
     <div id="main" class="pure-u-1">
-        <div class="email-content">
-            <div class="email-content-header pure-g">
-                <div class="pure-u-1-2">
-                    <h1 class="email-content-title">Hello from Toronto</h1>
-                    <p class="email-content-subtitle">
-                        From <a>Tilo Mitra</a> at <span>3:56pm, April 3, 2012</span>
-                    </p>
-                </div>
-
-                <div class="email-content-controls pure-u-1-2">
-                    <button class="secondary-button pure-button">Reply</button>
-                    <button class="secondary-button pure-button">Forward</button>
-                    <button class="secondary-button pure-button">Move to</button>
-                </div>
-            </div>
-
-            <div class="email-content-body">
-                <p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                </p>
-                <p>
-                    Duis aute irure dolor in reprehenderit in voluptate velit essecillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                </p>
-                <p>
-                    Aliquam ac feugiat dolor. Proin mattis massa sit amet enim iaculis tincidunt. Mauris tempor mi vitae sem aliquet pharetra. Fusce in dui purus, nec malesuada mauris. Curabitur ornare arcu quis mi blandit laoreet. Vivamus imperdiet fermentum mauris, ac posuere urna tempor at. Duis pellentesque justo ac sapien aliquet egestas. Morbi enim mi, porta eget ullamcorper at, pharetra id lorem.
-                </p>
-                <p>
-                    Donec sagittis dolor ut quam pharetra pretium varius in nibh. Suspendisse potenti. Donec imperdiet, velit vel adipiscing bibendum, leo eros tristique augue, eu rutrum lacus sapien vel quam. Nam orci arcu, luctus quis vestibulum ut, ullamcorper ut enim. Morbi semper erat quis orci aliquet condimentum. Nam interdum mauris sed massa dignissim rhoncus.
-                </p>
-                <p>
-                    Regards,<br>
-                    Tilo
-                </p>
-
-
-                    <!-- toolbar with suitable buttons and dialogues -->
-                    <div id="toolbar">
-                      <a data-wysihtml5-command="bold">bold</a>
-                      <a data-wysihtml5-command="italic">italic</a>
-                      <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h1">H1</a>
-                      <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="p">P</a>
-                    </div>
-
-                    <!-- element to edit -->
-                    <form>
-                        <textarea id="editor" placeholder="Enter your text ..." autofocus></textarea>
-                    </form>
-            </div>
-        </div>
     </div>
 </div>
+
+
+
 {% endblock %}
 
 {% block closing_scripts %}
-<script>
-  var editor = new wysihtml5.Editor('editor', {
-    toolbar: 'toolbar',
-    parserRules:  wysihtml5ParserRules
-  });
+<script type="text/template" id="ed-list-item">
+<div id="file-<%- id %>" class="email-item <%= !encrypt ? 'email-item-unread' : '' %> <%= active ? 'email-item-selected' : '' %> pure-g">
+
+    <div class="pure-u" style="display:none;">
+        <img class="email-avatar" alt="Tilo Mitra&#x27;s avatar" height="64" width="64" src="img/common/tilo-avatar.png" />
+    </div>
+
+    <div class="pure-u-3-4">
+        <h5 class="email-name"><%- authors %></h5>
+        <h4 class="email-subject"><%- title %></h4>
+        <p class="email-desc"><%- desc %></p>
+    </div>
+</div>
+</script>
+
+<script type="text/template" id="ed-detail">
+<div class="email-content-header pure-g">
+    <div class="pure-u-1">
+        <form class="pure-form" id="ed-form-decrypt">
+            <input type="password" placeholder="{{ 'PassphrasePlaceholder'|trans }}" class="pure-u-3-4" />
+            <button type="submit" class="pure-button button-success">{{ 'DecryptButton'|trans }}</button>
+        </form>
+    </div>
+
+    <div class="pure-u-1">
+        <h1 class="email-content-title"><%- title %></h1>
+        <p class="email-content-subtitle">
+            {{ 'From'|trans }} <%= authors.join(', ') %>, {{ 'UpdatedAt'|trans }} <span><%= moment(updated_at).fromNow() %></span><br />
+            <%- desc %>
+        </p>
+    </div>
+</div>
+
+<div class="email-content-body">
+    <% if (!encrypt) { %>
+        <button id="ed-button-edit" class="pure-button button-warning">{{ 'EditButton'|trans }}</button>
+    <% } %>
+    <%= content %>
+</div>
+</script>
+
+<script type="text/template" id="ed-edit">
+<div class="email-content-header pure-g">
+    <div class="pure-u-1">
+        <form class="pure-form" id="ed-form-decrypt">
+            <input type="password" placeholder="{{ 'PassphrasePlaceholder'|trans }}" class="pure-u-3-4" />
+            <button id="ed-button-save" class="pure-button button-success">{{ 'SaveButton'|trans }}</button>
+        </form>
+    </div>
+
+    <div class="pure-u-1">
+        <input type="text" id="ed-edit-title" class="email-content-title" value="<%- title %>" />
+        <p class="email-content-subtitle">
+            {{ 'From'|trans }} <%= authors.join(', ') %>, {{ 'UpdatedAt'|trans }} <span><%= moment(updated_at).fromNow() %></span><br />
+            <input type="text" id="ed-edit-desc" value="<%- desc %>" />
+        </p>
+    </div>
+</div>
+
+
+<div class="email-content-body">
+    <button id="ed-button-cancel" class="pure-button button-secondary">{{ 'CancelButton'|trans }}</button>
+    <textarea id="ed-edit-content"><%= content %></textarea>
+</div>
 </script>
 {% endblock %}

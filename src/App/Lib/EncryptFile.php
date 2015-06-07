@@ -34,44 +34,61 @@ class EncryptFile extends File
     /**
      * Dump encrypted file with user passphrase and system passphrase
      */
-    public function dump()
+    public function dump($bForce = false)
     {
-        $sContent = $this->content;
+        if (empty($this->passphrase) ) { return; }
 
-        if (! empty($this->passphrase) ) {
-            $this->encrypt($this->passphrase);
-            parent::dump();
-        }
+        $sContent = $this->content;
+        $this->encrypt($this->passphrase);
+        parent::dump($bForce);
+
+        // Revert original file
+        $this->setContent($sContent);
 
         // Backup versioned filed with system passphrase
-        $this->setContent($sContent);
         $this->dumpSystem();
+    }
+
+    public function setPassphrase($sPassphrase)
+    {
+        if (is_string($sPassphrase) ) { $this->passphrase = $sPassphrase; }
+    }
+
+    public function setSystemPassphrase($sPassphrase)
+    {
+        if (is_string($sPassphrase) ) { $this->systempassphrase = $sPassphrase; }
     }
 
     protected function dumpSystem()
     {
+        $sId = $this->id;
+        $sPath = $this->path;
+        $sContent = $this->content;
+
         $this->id = $this->id . '-' . date('YmdHis');
         $this->path = $this->systempath;
 
-        $this->decrypt($this->passphrase);
         $this->encrypt($this->systempassphrase);
-        parent::dump();
+        parent::dump(true);
+
+        // Revert original file
+        $this->setId($sId);
+        $this->setPath($sPath);
+        $this->setContent($sContent);
     }
 
-    protected function encrypt(string $sPassphrase)
+    protected function encrypt($sPassphrase)
     {
-        // @todo Encrypt
-        // openssl_encrypt($data, 'AES-128-CBC', $key, 0, 'fgrgfvcfghtfdrfg');
-        $sContent = $this->content;
+        $hashed_password = crypt($sPassphrase, $this->systempassphrase);
+        $sContent = openssl_encrypt($this->content, 'AES-128-CBC', $hashed_password, 0, $this->systempassphrase);
 
         $this->setContent($sContent);
     }
 
-    protected function decrypt(string $sPassphrase)
+    protected function decrypt($sPassphrase)
     {
-        // @todo Decrypt
-        // openssl_decrypt($data, 'AES-128-CBC', $key, 0, 'fgrgfvcfghtfdrfg');
-        $sContent = $this->content;
+        $hashed_password = crypt($sPassphrase, $this->systempassphrase);
+        $sContent = openssl_decrypt($this->content, 'AES-128-CBC', $hashed_password, 0, $this->systempassphrase);
 
         $this->setContent($sContent);
     }

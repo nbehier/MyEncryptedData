@@ -4,19 +4,42 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="A layout example that shows off a responsive email layout.">
-        <title>MyEncryptedData - {% block title %}No Title{% endblock %}</title>
+        <title>MyEncryptedData - {% block title %}{{ 'Homepage'|trans }}{% endblock %}</title>
         <link rel="stylesheet" href="{{ app.request.basePath }}/vendor/pure/pure-min.css" type="text/css" />
         <link rel="stylesheet" href="{{ app.request.basePath }}/css/layout.css" type="text/css" />
-        <link rel="stylesheet" href="{{ app.request.basePath }}/css/editor-toolbar.css" type="text/css" />
+        {#<link rel="stylesheet" href="{{ app.request.basePath }}/css/editor-toolbar.css" type="text/css" />#}
         <link rel="stylesheet" href="{{ app.request.basePath }}/css/styles.css" type="text/css" />
         {% block head %}{% endblock %}
         <link rel="shortcut icon" href="{{ app.request.basePath }}/favicon.ico" />
     </head>
     <body>
         {% block content %}{% endblock %}
+        {#
+        <script src="{{ app.request.basePath }}/vendor/react/react.js"></script>
+        <script src="{{ app.request.basePath }}/vendor/react/JSXTransformer.js"></script>
+        <script src="{{ app.request.basePath }}/vendor/jquery/dist/jquery.js"></script>
+        <script src="{{ app.request.basePath }}/vendor/classnames/index.js"></script>
+        #}
+
+        {#
         <script src="{{ app.request.basePath }}/vendor/wysihtml/dist/wysihtml5x-toolbar.min.js"></script>
         <script src="{{ app.request.basePath }}/vendor/wysihtml/parser_rules/advanced_and_extended.js"></script>
-        <script src="{{ app.request.basePath }}/js/bootstrap.js"></script>
+
+        <script src="{{ app.request.basePath }}/vendor/marked/marked.min.js"></script>
+
+        <script type="text/jsx;harmony=true" src="{{ app.request.basePath }}/js/bootstrap.js"></script>
+        #}
+
+        <script src="{{ app.request.basePath }}/vendor/jquery/dist/jquery.min.js"></script>
+        <script src="{{ app.request.basePath }}/vendor/underscore/underscore-min.js"></script>
+        <script src="{{ app.request.basePath }}/vendor/backbone/backbone-min.js"></script>
+        <script src="{{ app.request.basePath }}/vendor/backbone.picky/src/backbone.picky.js"></script>
+        <script src="{{ app.request.basePath }}/vendor/moment/min/moment.min.js"></script>
+        <script src="{{ app.request.basePath }}/vendor/moment/locale/fr.js"></script>
+        <script src="{{ app.request.basePath }}/js/application.js"></script>
+        <script>
+        moment.locale('{{ app.locale }}');
+        </script>
         {% block closing_scripts %}{% endblock %}
     </body>
 </html>
