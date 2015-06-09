@@ -67,10 +67,12 @@ $(function(){
                 },
                 success: function(response) {
                     this.set({
-                        'content': properties.content, // On stocke le nouveau contenu, pas celui encodé
+                        'content': response.data.content,
                         'desc': response.data.desc,
                         'title': response.data.title,
-                        'authors': response.data.authors
+                        'authors': response.data.authors,
+                        'created_at': response.data.created_at,
+                        'updated_at': response.data.updated_at
                     });
                 }.bind(this),
                 error: function(xhr, status, err) {
@@ -108,11 +110,10 @@ $(function(){
         templateShow: _.template($('#ed-detail').html()),
         templateEdit: _.template($('#ed-edit').html()),
         events: {
-            "click #ed-button-edit"   : "edit",
             "submit #ed-form-decrypt" : "decrypt",
             "click #ed-button-edit"   : "edit",
             "click #ed-button-cancel" : "cancel",
-            "click #ed-button-save"   : "save"
+            "submit #ed-form-save"    : "save"
         },
         initialize: function() {
             this.listenTo(this.model, 'change', this.render);
@@ -144,8 +145,9 @@ $(function(){
         cancel: function() {
             this.model.cancelEdition();
         },
-        save: function() {
-            var passphrase = this.$('#ed-form-decrypt input').get(0).value.trim();
+        save: function(e) {
+            e.preventDefault();
+            var passphrase = this.$('#ed-form-save input').get(0).value.trim();
             var title = $('#ed-edit-title').val().trim();
             var desc = $('#ed-edit-desc').val().trim();
             var authors = $('#ed-edit-authors').val().trim();

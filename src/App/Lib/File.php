@@ -63,6 +63,11 @@ abstract class File
                 $this->setId($iId);
                 $this->setCreatedAt();
             }
+            else {
+                $oFile = FileFinder::getFile($this->path, $this->id, '', '');
+                $aFile = $oFile->toArray();
+                $this->setCreatedAt($aFile['created_at']);
+            }
 
             $this->setUpdatedAt();
         }

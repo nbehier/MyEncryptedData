@@ -82,16 +82,16 @@
 <script type="text/template" id="ed-edit">
 <div class="email-content-header pure-g">
     <div class="pure-u-1">
-        <form class="pure-form" id="ed-form-decrypt">
+        <form class="pure-form" id="ed-form-save">
             <input type="password" placeholder="{{ 'PassphrasePlaceholder'|trans }}" class="pure-u-3-4" />
-            <button id="ed-button-save" class="pure-button button-success">{{ 'SaveButton'|trans }}</button>
+            <button type="submit" id="ed-button-save" class="pure-button button-success">{{ 'SaveButton'|trans }}</button>
         </form>
     </div>
 
     <div class="pure-u-1">
         <input type="text" id="ed-edit-title" class="email-content-title" value="<%- title %>" />
         <p class="email-content-subtitle">
-            {{ 'From'|trans }} <%= authors.join(', ') %>, {{ 'UpdatedAt'|trans }} <span><%= moment(updated_at).fromNow() %></span><br />
+            {{ 'From'|trans }} <input type="text" id="ed-edit-authors" value="<%= authors.join(', ') %>" />, {{ 'UpdatedAt'|trans }} <span><%= moment(updated_at).fromNow() %></span><br />
             <input type="text" id="ed-edit-desc" value="<%- desc %>" />
         </p>
     </div>

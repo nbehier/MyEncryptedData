@@ -62,7 +62,7 @@ class FileFinder
     public static function saveFile($aDatas, $sPassphrase, $sSystemPath, $sSystemPassphrase)
     {
         $encryptedFile = new EncryptFile($aDatas, $sPassphrase, $sSystemPassphrase, $sSystemPath);
-        $encryptedFile->dump($sPassphrase);
+        $encryptedFile->dump();
 
         return $encryptedFile;
     }

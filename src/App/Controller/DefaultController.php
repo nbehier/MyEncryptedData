@@ -89,10 +89,10 @@ class DefaultController
         $sId = $request->get('id');
         $sPassphrase = $request->get('passphrase');
         $datas = array(
-            'title'   => $request->get('title'),
-            'authors' => $request->get('authors'),
-            'desc'    => $request->get('desc'),
-            'content' => $request->get('content')
+            'title'      => $request->get('title'),
+            'authors'    => $request->get('authors'),
+            'desc'       => $request->get('desc'),
+            'content'    => $request->get('content')
         );
         if (!empty($sId)) {
             $datas['id'] = $sId;
