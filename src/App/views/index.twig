@@ -5,25 +5,6 @@
 <div id="layout" class="content pure-g">
 
     <div id="nav" class="pure-u">
-        <a href="#" class="nav-menu-button">{{ 'Menu'|trans }}</a>
-
-        <div class="nav-inner">
-            <button class="primary-button pure-button">{{ 'Compose'|trans }}</button>
-
-            <div class="pure-menu">
-                <ul class="pure-menu-list">
-                    <li class="pure-menu-item"><a href="#" class="pure-menu-link">Inbox <span class="email-count">(2)</span></a></li>
-                    <li class="pure-menu-item"><a href="#" class="pure-menu-link">Important</a></li>
-                    <li class="pure-menu-item"><a href="#" class="pure-menu-link">Sent</a></li>
-                    <li class="pure-menu-item"><a href="#" class="pure-menu-link">Drafts</a></li>
-                    <li class="pure-menu-item"><a href="#" class="pure-menu-link">Trash</a></li>
-                    <li class="pure-menu-heading">Labels</li>
-                    <li class="pure-menu-item"><a href="#" class="pure-menu-link"><span class="email-label-personal"></span>Personal</a></li>
-                    <li class="pure-menu-item"><a href="#" class="pure-menu-link"><span class="email-label-work"></span>Work</a></li>
-                    <li class="pure-menu-item"><a href="#" class="pure-menu-link"><span class="email-label-travel"></span>Travel</a></li>
-                </ul>
-            </div>
-        </div>
     </div>
 
     <div id="list" class="pure-u-1">
@@ -46,9 +27,9 @@
     </div>
 
     <div class="pure-u-3-4">
-        <h5 class="email-name"><%- authors %></h5>
-        <h4 class="email-subject"><%- title %></h4>
-        <p class="email-desc"><%- desc %></p>
+        <h5 class="email-name"><%= !authors ? '<em class="empty">{{ "EmptyTitle"|trans }}</em>' : authors %></h5>
+        <h4 class="email-subject"><%= !title ? '<em class="empty">{{ "EmptyAuthors"|trans }}</em>' : title %></h4>
+        <p class="email-desc"><%= !desc ? '<em class="empty">{{ "EmptyDesc"|trans }}</em>' : desc %></p>
     </div>
 </div>
 </script>
@@ -63,10 +44,10 @@
     </div>
 
     <div class="pure-u-1">
-        <h1 class="email-content-title"><%- title %></h1>
+        <h1 class="email-content-title"><%= !title ? '{{ "EmptyTitle"|trans }}' : title %></h1>
         <p class="email-content-subtitle">
-            {{ 'From'|trans }} <%= authors.join(', ') %>, {{ 'UpdatedAt'|trans }} <span><%= moment(updated_at).fromNow() %></span><br />
-            <%- desc %>
+            {{ 'From'|trans }} <%= !authors ? '{{ "EmptyAuthors"|trans }}' : authors.join(', ') %>, {{ 'UpdatedAt'|trans }} <span><%= moment(updated_at).fromNow() %></span><br />
+            <%= !desc ? '{{ "EmptyDesc"|trans }}' : desc %>
         </p>
     </div>
 </div>
@@ -89,10 +70,10 @@
     </div>
 
     <div class="pure-u-1">
-        <input type="text" id="ed-edit-title" class="email-content-title" value="<%- title %>" />
+        <input type="text" id="ed-edit-title" placeholder="{{ "EmptyTitle"|trans }}" class="email-content-title" value="<%- title %>" />
         <p class="email-content-subtitle">
-            {{ 'From'|trans }} <input type="text" id="ed-edit-authors" value="<%= authors.join(', ') %>" />, {{ 'UpdatedAt'|trans }} <span><%= moment(updated_at).fromNow() %></span><br />
-            <input type="text" id="ed-edit-desc" value="<%- desc %>" />
+            {{ 'From'|trans }} <input type="text" id="ed-edit-authors" placeholder="{{ "EmptyAuthors"|trans }}" value="<%= !authors ? '' : authors.join(', ') %>" /><%= updated_at ? ", {{ 'UpdatedAt'|trans }} <span>" + moment(updated_at).fromNow() + "</span>" : ""%><br />
+            <input type="text" id="ed-edit-desc" placeholder="{{ "EmptyDesc"|trans }}" value="<%- desc %>" />
         </p>
     </div>
 </div>
@@ -101,6 +82,28 @@
 <div class="email-content-body">
     <button id="ed-button-cancel" class="pure-button button-secondary">{{ 'CancelButton'|trans }}</button>
     <textarea id="ed-edit-content"><%= content %></textarea>
+</div>
+</script>
+
+<script type="text/template" id="ed-toolbar">
+<a href="#" class="nav-menu-button">{{ 'Menu'|trans }}</a>
+
+<div class="nav-inner">
+    <button class="primary-button pure-button" id="ed-new-trigger">{{ 'Compose'|trans }}</button>
+
+    <div class="pure-menu" style="display:none">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Inbox <span class="email-count">(2)</span></a></li>
+            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Important</a></li>
+            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Sent</a></li>
+            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Drafts</a></li>
+            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Trash</a></li>
+            <li class="pure-menu-heading">Labels</li>
+            <li class="pure-menu-item"><a href="#" class="pure-menu-link"><span class="email-label-personal"></span>Personal</a></li>
+            <li class="pure-menu-item"><a href="#" class="pure-menu-link"><span class="email-label-work"></span>Work</a></li>
+            <li class="pure-menu-item"><a href="#" class="pure-menu-link"><span class="email-label-travel"></span>Travel</a></li>
+        </ul>
+    </div>
 </div>
 </script>
 {% endblock %}

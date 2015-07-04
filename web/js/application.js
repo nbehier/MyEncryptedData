@@ -1,5 +1,18 @@
 $(function(){
 
+//// ED Utility
+    var EDToolBox = {
+        Spinner: {
+            append: function($el) {
+                $el.append('<div class="spinner"><div class="rect1"></div><div class="rect2"></div><div class="rect3"></div><div class="rect4"></div><div class="rect5"></div></div>');
+            },
+            remove: function($el) {
+                $el.find('.spinner').remove();
+            }
+        }
+    }
+
+
 //// ED MODEL
     var ED = Backbone.Model.extend({
         initialize: function(){
@@ -20,7 +33,8 @@ $(function(){
                 created_at: '',
                 active: false,
                 editing: false,
-                encrypt: true
+                encrypt: true,
+                updating: false
             };
         },
         activate: function() {
@@ -41,6 +55,12 @@ $(function(){
                 dataType: 'json',
                 type: 'POST',
                 data: { 'passphrase' : passphrase },
+                beforeSend: function() {
+                    this.set({ updating: true });
+                }.bind(this),
+                complete: function() {
+                    this.set({ updating: false });
+                }.bind(this),
                 success: function(data) {
                     this.set({ 'content': data.content, encrypt: false });
                 }.bind(this),
@@ -65,6 +85,12 @@ $(function(){
                     'content'    : properties.content,
                     'authors'    : properties.authors
                 },
+                beforeSend: function() {
+                    this.set({ updating: true });
+                }.bind(this),
+                complete: function() {
+                    this.set({ updating: false });
+                }.bind(this),
                 success: function(response) {
                     this.set({
                         'content': response.data.content,
@@ -83,6 +109,9 @@ $(function(){
                     );
                 }.bind(this)
             });
+        },
+        create: function() {
+            this.set({ editing: true, encrypt: false });
         }
     });
 
@@ -117,9 +146,16 @@ $(function(){
         },
         initialize: function() {
             this.listenTo(this.model, 'change', this.render);
+            this.listenTo(this.model, 'change:updating', this.renderUpdating);
             this.listenTo(this.model, 'destroy', this.clear);
         },
         render: function() {
+            // Do render view only if necessary
+            var alterAttributes = _.keys(_.omit(this.model.changedAttributes(), ['updating'])).length;
+            if (alterAttributes == 0) {
+                return this;
+            }
+
             if (this.model.get('editing') ) {
                 this.$el.html(this.templateEdit(this.model.toJSON() ) );
             }
@@ -127,6 +163,14 @@ $(function(){
                 this.$el.html(this.templateShow(this.model.toJSON() ) );
             }
             return this;
+        },
+        renderUpdating: function() {
+            if (this.model.get('updating') ) {
+                EDToolBox.Spinner.append(this.$('.email-content-header form:first'));
+            }
+            else {
+                EDToolBox.Spinner.remove(this.$('.email-content-header form:first'));
+            }
         },
         clear: function() {
             this.model.destroy();
@@ -188,6 +232,24 @@ $(function(){
     });
 
 
+    var EDToolbarView = Backbone.View.extend({
+        tagName:  "div",
+        template: _.template($('#ed-toolbar').html() ),
+        events: {
+            "click #ed-new-trigger" : "new"
+        },
+        initialize: function() {
+        },
+        render: function() {
+            this.$el.html(this.template() );
+            return this;
+        },
+        new: function() {
+            Backbone.trigger('documents:newToCreate');
+        }
+    });
+
+
 //// ED APPLICATION
 
     var AppView = Backbone.View.extend({
@@ -195,16 +257,19 @@ $(function(){
         initialize: function() {
             this.edList = this.$('#list');
             this.edDetail = this.$('#main');
+            this.edToolbar = this.$('#nav');
 
             this.listenTo(EDs, 'add', this.addOne);
             this.listenTo(EDs, 'reset', this.addAll);
             this.listenTo(EDs, 'all', this.render);
-            this.listenTo(EDs, 'select:one', this.displayDetail)
+            this.listenTo(EDs, 'select:one', this.displayDetail);
+            this.listenTo(Backbone, 'documents:newToCreate', this.createOneDocument);
 
             EDs.fetch();
         },
         render: function() {
-
+            var toolbar = new EDToolbarView();
+            this.edToolbar.html(toolbar.render().el );
         },
         displayDetail: function(ed) {
             var detailView = new EDDetailView({model: ed});
@@ -217,6 +282,12 @@ $(function(){
         addAll: function() {
             EDs.each(this.addOne, this);
         },
+        createOneDocument: function() {
+            var oDocument = new ED();
+            EDs.add(oDocument);
+            this.displayDetail(oDocument);
+            oDocument.create();
+        }
     });
 
     var App = new AppView;
