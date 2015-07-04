@@ -123,4 +123,21 @@ class DefaultController
             'data' => $encryptedFile->toArray()
         ));
     }
+
+    public function deleteAction(Request $request, Application $app)
+    {
+        $sId = $request->get('id');
+        if (empty($sId) ) {
+            $error = array('message' => 'No document ID given.');
+            return $app->json($error, 400);
+        }
+
+        $isSuccess = FileFinder::deleteFile($app['securefile.path'], $sId);
+
+        if (! $isSuccess) {
+            $app->json(array('message' => 'Delete file impossible'), 400);
+        }
+
+        return $app->json(array('message' => 'Delete file with success'), 200);
+    }
 }

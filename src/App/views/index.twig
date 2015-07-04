@@ -44,6 +44,7 @@
     </div>
 
     <div class="pure-u-1">
+        <button id="ed-button-delete" class="pure-button button-error">{{ 'DeleteButton'|trans }}</button>
         <h1 class="email-content-title"><%= !title ? '{{ "EmptyTitle"|trans }}' : title %></h1>
         <p class="email-content-subtitle">
             {{ 'From'|trans }} <%= !authors ? '{{ "EmptyAuthors"|trans }}' : authors.join(', ') %>, {{ 'UpdatedAt'|trans }} <span><%= moment(updated_at).fromNow() %></span><br />
@@ -72,7 +73,8 @@
     <div class="pure-u-1">
         <input type="text" id="ed-edit-title" placeholder="{{ "EmptyTitle"|trans }}" class="email-content-title" value="<%- title %>" />
         <p class="email-content-subtitle">
-            {{ 'From'|trans }} <input type="text" id="ed-edit-authors" placeholder="{{ "EmptyAuthors"|trans }}" value="<%= !authors ? '' : authors.join(', ') %>" /><%= updated_at ? ", {{ 'UpdatedAt'|trans }} <span>" + moment(updated_at).fromNow() + "</span>" : ""%><br />
+            {{ 'From'|trans }} <input type="text" id="ed-edit-authors" placeholder="{{ "EmptyAuthors"|trans }}" value="<%= !authors ? '' : authors.join(', ') %>" />
+            <% if (updated_at) { %>, {{ 'UpdatedAt'|trans }} <span> <%= moment(updated_at).fromNow() %> </span> <% } %><br />
             <input type="text" id="ed-edit-desc" placeholder="{{ "EmptyDesc"|trans }}" value="<%- desc %>" />
         </p>
     </div>

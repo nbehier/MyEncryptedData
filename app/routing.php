@@ -13,3 +13,4 @@ $app->get('/documents', 'app.default_controller:getDocumentsAction');
 $app->post('/documents/{id}/encrypt', 'app.default_controller:encryptAction');
 $app->post('/documents/new', 'app.default_controller:encryptAction');
 $app->post('/documents/{id}/decrypt', 'app.default_controller:decryptAction');
+$app->delete('/documents/{id}', 'app.default_controller:deleteAction');

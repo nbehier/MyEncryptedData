@@ -93,6 +93,7 @@ $(function(){
                 }.bind(this),
                 success: function(response) {
                     this.set({
+                        'id': response.data.id,
                         'content': response.data.content,
                         'desc': response.data.desc,
                         'title': response.data.title,
@@ -112,6 +113,9 @@ $(function(){
         },
         create: function() {
             this.set({ editing: true, encrypt: false });
+        },
+        delete: function() {
+            this.destroy();
         }
     });
 
@@ -142,6 +146,7 @@ $(function(){
             "submit #ed-form-decrypt" : "decrypt",
             "click #ed-button-edit"   : "edit",
             "click #ed-button-cancel" : "cancel",
+            "click #ed-button-delete" : "delete",
             "submit #ed-form-save"    : "save"
         },
         initialize: function() {
@@ -173,7 +178,7 @@ $(function(){
             }
         },
         clear: function() {
-            this.model.destroy();
+            this.remove();
         },
         decrypt: function(e) {
             e.preventDefault();
@@ -205,6 +210,11 @@ $(function(){
                 'authors' : authors,
                 'content' : content
             })
+        },
+        delete: function() {
+            if (window.confirm("Voulez-vous vraiment supprimer ces données définitivement ?")) {
+                this.model.delete();
+            }
         }
     });
 
@@ -227,7 +237,7 @@ $(function(){
             this.model.collection.select(this.model);
         },
         clear: function() {
-            this.model.destroy();
+            this.remove();
         }
     });
 

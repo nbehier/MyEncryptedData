@@ -102,4 +102,13 @@ class FileFinder
 
         return false;
     }
+
+    /**
+     * Delete a file
+     * @return bool true if success, false otherwise
+     */
+    public static function deleteFile($sPath, $sName)
+    {
+        return unlink($sPath . '/' . $sName . '.yml');
+    }
 }
