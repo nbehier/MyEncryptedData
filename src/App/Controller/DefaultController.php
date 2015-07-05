@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Lib\FileFinder;
+use App\Lib\EncryptFile;
 use Psr\Log\LoggerInterface;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
@@ -95,6 +96,8 @@ class DefaultController
 
         $sId = $request->get('id');
         $sPassphrase = $request->get('passphrase');
+        $bForceNewPassphrase = filter_var($request->get('forceNewPassphrase', false), FILTER_VALIDATE_BOOLEAN);
+
         $datas = array(
             'title'      => $request->get('title'),
             'authors'    => $request->get('authors'),
@@ -109,6 +112,18 @@ class DefaultController
             $error = array('message' => $app['translator']->trans('EncryptMethodErrorNoPassphrase'));
             return $app->json($error, 400);
         }
+        if (! $bForceNewPassphrase) {
+            // Si le fichier n'est pas nouveau,
+            // on vérifie que la passphrase est similaire à celle précédemment utilisée
+            $sEncryptWitness = FileFinder::getFileProperty($app['securefile.path'], $sId, 'witness');
+            if (! empty($sEncryptWitness) ) {
+                if (! EncryptFile::checkEncryptWitness($sEncryptWitness, $app['securefile.witness'], $sPassphrase, $app['securefile.systempassphrase']) ) {
+                    $error = array('message' => $app['translator']->trans('EncryptMethodErrorNewPassphrase'));
+                    return $app->json($error, 409);
+                }
+            }
+        }
+
         if (empty($datas['title']) ) {
             $error = array('message' => $app['translator']->trans('EncryptMethodErrorNoTitle'));
             return $app->json($error, 400);
@@ -129,10 +144,14 @@ class DefaultController
 
         return $app->json(array(
             'data' => $encryptedFile->toArray(),
-            'message' => ''
+            'message' => $app['translator']->trans('EncryptMethodSuccess')
         ));
     }
 
+    /**
+     * @TODO Secure action with a temporary parameter,
+     *       anonymous could not be delete a file with simple action call
+     */
     public function deleteAction(Request $request, Application $app)
     {
         $sId = $request->get('id');

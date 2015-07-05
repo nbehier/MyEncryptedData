@@ -37,7 +37,7 @@ class FileFinder
     /**
      * Get YAML file
      */
-    public static function getFile($sPath, $sName, $sPassphrase, $sSystemPassphrase)
+    public static function getFile($sPath, $sName, $sPassphrase = '', $sSystemPassphrase = '')
     {
         $finder = new Finder();
         $finder->files()->in($sPath)->depth('== 0')->name($sName . '.yml');
@@ -54,6 +54,21 @@ class FileFinder
         }
 
         return $oFile;
+    }
+
+    /**
+     * Get a property on a file
+     */
+    public static function getFileProperty($sPath, $sName, $sProperty)
+    {
+        if ($oFile = self::getFile($sPath, $sName) ) {
+            $aFile = $oFile->toArray(true);
+            if (array_key_exists($sProperty, $aFile) ) {
+                return $aFile[$sProperty];
+            }
+        }
+
+        return NULL;
     }
 
     /**

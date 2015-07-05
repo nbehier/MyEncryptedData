@@ -8,7 +8,7 @@ em.empty { opacity:0.6; }
 #ed-button-cancel,
 #ed-button-delete { margin:1.1em -1em 0 0; }
 
-.email-content input[type=text] { border:1px solid #ccc; }
+.email-content input[type=text] { background-color:#efefef; border-width:0px; }
 #ed-edit-title { font-size:2em; font-weight:bold; margin-bottom:4px; }
 #ed-edit-desc { margin-top:4px; }
 

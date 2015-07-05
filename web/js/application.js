@@ -36,7 +36,8 @@ $(function(){
                 encrypt: true,
                 updating: false,
                 error: '',
-                success: ''
+                success: '',
+                forceUpdatePassphrase: false
             };
         },
         activate: function() {
@@ -79,6 +80,8 @@ $(function(){
             });
         },
         encrypt: function(passphrase, properties) {
+            var bForceNewPassphrase = this.get('forceUpdatePassphrase');
+
             $.ajax({
                 url: '/documents/' + this.id + '/encrypt',
                 dataType: 'json',
@@ -88,10 +91,17 @@ $(function(){
                     'title'      : properties.title,
                     'desc'       : properties.desc,
                     'content'    : properties.content,
-                    'authors'    : properties.authors
+                    'authors'    : properties.authors,
+                    'forceNewPassphrase' : bForceNewPassphrase
                 },
                 beforeSend: function() {
-                    this.set({ updating: true });
+                    this.set({
+                        title: properties.title,
+                        desc: properties.desc,
+                        content: properties.content,
+                        authors: properties.authors,
+                        updating: true
+                    });
                 }.bind(this),
                 success: function(response) {
                     this.set({
@@ -102,15 +112,19 @@ $(function(){
                         'authors': response.data.authors,
                         'created_at': response.data.created_at,
                         'updated_at': response.data.updated_at,
+                        'editing': false,
                         'success': response.message,
-                        'error': ''
+                        'error': '',
+                        'forceUpdatePassphrase': false
                     });
                 }.bind(this),
                 error: function(xhr, status, err) {
                     this.set({
                         'error': xhr.responseJSON.message,
                         'updating': false,
-                        'success': ''
+                        'editing': true,
+                        'success': '',
+                        'forceUpdatePassphrase': true
                     });
                 }.bind(this)
             });
@@ -220,7 +234,17 @@ $(function(){
         save: function(e) {
             e.preventDefault();
 
-            var passphrase = this.$('#ed-form-save input').get(0).value.trim();
+            var passphrase = this.$('#ed-input-password').val().trim();
+            console.log(this.model.get('forceUpdatePassphrase') );
+            if (this.model.get('forceUpdatePassphrase') ) {
+                var passphrase2 = this.$('#ed-input-password-confirm').val().trim();
+                if (_.isEmpty(passphrase) || passphrase != passphrase2) {
+                    window.alert("Pour définir une nouvelle passphrase, veuillez la renseigner deux fois");
+                    return;
+                }
+            }
+
+
             var title = $('#ed-edit-title').val().trim();
             var desc = $('#ed-edit-desc').val().trim();
             var authors = $('#ed-edit-authors').val().trim();
@@ -237,7 +261,6 @@ $(function(){
                 'authors' : authors,
                 'content' : content
             });
-            this.model.cancelEdition();
         },
         delete: function() {
             if (window.confirm("Voulez-vous vraiment supprimer ces données définitivement ?")) {

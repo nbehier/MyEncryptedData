@@ -91,6 +91,18 @@ class EncryptFile extends File
         return false;
     }
 
+    public static function checkEncryptWitness($sWitnessToCompare, $sWitness, $sPassphrase, $sSystemPassphrase)
+    {
+        $hashed_password = crypt($sPassphrase, $sSystemPassphrase);
+        $sEncryptWitness = openssl_encrypt($sWitness, 'AES-128-CBC', $hashed_password, 0, $sSystemPassphrase);
+
+        if ($sWitnessToCompare == $sEncryptWitness) {
+            return true;
+        }
+
+        return false;
+    }
+
     protected function dumpSystem()
     {
         $sId = $this->id;
