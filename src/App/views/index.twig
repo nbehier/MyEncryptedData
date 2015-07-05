@@ -50,7 +50,7 @@
     <div class="pure-u-1">
         <form class="pure-form" id="ed-form-decrypt">
             <button type="submit" class="pure-button pure-button-success <%= encrypt ? '' : 'pure-button-disabled' %>">{{ 'DecryptButton'|trans }}</button>
-            <input type="password" placeholder="{{ 'PassphrasePlaceholder'|trans }}" class="pure-u-3-4" <%= encrypt ? '' : 'pure-button-disabled' %> />
+            <input type="password" placeholder="{{ 'PassphrasePlaceholder'|trans }}" class="pure-u-3-4" <%= encrypt ? '' : 'disabled' %> required />
         </form>
     </div>
 
@@ -90,16 +90,16 @@
     <div class="pure-u-1">
         <form class="pure-form" id="ed-form-save">
             <button type="submit" id="ed-button-save" class="pure-button pure-button-success"><%= forceUpdatePassphrase ? "{{ 'ConfirmSaveButton'|trans }}" : "{{ 'SaveButton'|trans }}" %></button>
-            <input type="password" id="ed-input-password" placeholder="{{ 'PassphrasePlaceholder'|trans }}" class="pure-u-<%= forceUpdatePassphrase ? '1' : '3' %>-4" />
-            <% if (forceUpdatePassphrase) { %><input type="password" id="ed-input-password-confirm" placeholder="{{ 'PassphrasePlaceholderConfirm'|trans }}" class="pure-u-2-4" /><% } %>
+            <input type="password" id="ed-input-password" placeholder="{{ 'PassphrasePlaceholder'|trans }}" class="pure-u-<%= forceUpdatePassphrase ? '1' : '3' %>-4" required />
+            <% if (forceUpdatePassphrase) { %><input type="password" id="ed-input-password-confirm" placeholder="{{ 'PassphrasePlaceholderConfirm'|trans }}" class="pure-u-2-4" required /><% } %>
         </form>
     </div>
 
     <div class="pure-u-1">
         <button id="ed-button-cancel" class="pure-button pure-button-secondary right">{{ 'CancelButton'|trans }}</button>
-        <input type="text" id="ed-edit-title" placeholder="{{ "EmptyTitle"|trans }}" class="pure-u-4-5 email-content-title" value="<%- title %>" />
+        <input type="text" id="ed-edit-title" placeholder="{{ "EmptyTitle"|trans }}" class="pure-u-4-5 email-content-title" value="<%- title %>" required />
         <p class="email-content-subtitle">
-            {{ 'From'|trans }} <input type="text" id="ed-edit-authors" class="pure-u-2-5" placeholder="{{ "EmptyAuthors"|trans }}" value="<%= _.isArray(authors) ? authors.join(', ') : authors %>" />
+            {{ 'From'|trans }} <input type="text" id="ed-edit-authors" class="pure-u-2-5" placeholder="{{ "EmptyAuthors"|trans }}" value="<%= _.isArray(authors) ? authors.join(', ') : authors %>" required />
             <% if (updated_at) { %>, {{ 'UpdatedAt'|trans }} <span> <%= moment(updated_at).fromNow() %> </span> <% } %><br />
             <input type="text" id="ed-edit-desc" class="pure-u-4-5" placeholder="{{ "EmptyDesc"|trans }}" value="<%- desc %>" />
         </p>

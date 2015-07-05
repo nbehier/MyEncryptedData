@@ -41,16 +41,16 @@ $(function(){
             };
         },
         activate: function() {
-            this.set({ active: true });
+            this.set({ active: true, error: '', success: '' });
         },
         desactivate: function() {
-            this.set({ active: false });
+            this.set({ active: false, error: '', success: '' });
         },
         edit: function() {
-            this.set({ editing: true });
+            this.set({ editing: true, error: '', success: '' });
         },
         cancelEdition: function() {
-            this.set({ editing: false });
+            this.set({ editing: false, error: '', success: '' });
         },
         decrypt: function(passphrase) {
             $.ajax({
@@ -219,10 +219,15 @@ $(function(){
         },
         decrypt: function(e) {
             e.preventDefault();
-            var passphrase = this.$('#ed-form-decrypt input').get(0).value.trim();
+            var $password = this.$('#ed-form-decrypt input');
+            var passphrase = $password.get(0).value.trim();
+
             if (!passphrase) {
-              return;
+                $password.addClass('form-field-error');
+                return;
             }
+            else { $password.removeClass('form-field-error'); }
+
             this.model.decrypt(passphrase);
         },
         edit: function() {
@@ -234,27 +239,44 @@ $(function(){
         save: function(e) {
             e.preventDefault();
 
-            var passphrase = this.$('#ed-input-password').val().trim();
-            console.log(this.model.get('forceUpdatePassphrase') );
+            var $password = this.$('#ed-input-password');
+            var $passwordConfirm = this.$('#ed-input-password-confirm');
+            var $title = this.$('#ed-edit-title');
+            var $desc = this.$('#ed-edit-desc');
+            var $authors = this.$('#ed-edit-authors');
+
+            var passphrase = $password.val().trim();
             if (this.model.get('forceUpdatePassphrase') ) {
-                var passphrase2 = this.$('#ed-input-password-confirm').val().trim();
+                var passphrase2 = $passwordConfirm.val().trim();
                 if (_.isEmpty(passphrase) || passphrase != passphrase2) {
+                    $password.addClass('form-field-error');
+                    $passwordConfirm.addClass('form-field-error');
                     window.alert("Pour définir une nouvelle passphrase, veuillez la renseigner deux fois");
                     return;
                 }
             }
 
-
-            var title = $('#ed-edit-title').val().trim();
-            var desc = $('#ed-edit-desc').val().trim();
-            var authors = $('#ed-edit-authors').val().trim();
+            var title = $title.val().trim();
+            var desc = $desc.val().trim();
+            var authors = $authors.val().trim();
 
             this.editor.updateElement();
-            var content = $('#ed-edit-content').val().trim();
+            var $content = this.$('#ed-edit-content');
+            var content = $content.val().trim();
 
-            if (!passphrase || !title) {
+            if (!passphrase) { $password.addClass('form-field-error'); }
+            else { $password.removeClass('form-field-error'); }
+
+            if (!title) { $title.addClass('form-field-error'); }
+            else { $title.removeClass('form-field-error'); }
+
+            if (!authors) { $authors.addClass('form-field-error'); }
+            else { $authors.removeClass('form-field-error'); }
+
+            if (!passphrase || !title || !authors) {
               return;
             }
+
             this.model.encrypt(passphrase, {
                 'title'   : title,
                 'desc'    : desc,
