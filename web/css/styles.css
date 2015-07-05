@@ -12,19 +12,23 @@ em.empty { opacity:0.6; }
 #ed-edit-title { font-size:2em; font-weight:bold; margin-bottom:4px; }
 #ed-edit-desc { margin-top:4px; }
 
+#ed-form-save .spinner,
+#ed-form-decrypt .spinner { display:inline-block; left:10px; position:relative; top:10px; }
+
 .spinner {
-  margin: 100px auto;
-  width: 50px;
+  margin: 3px;
+  width: 20px;
   height: 30px;
   text-align: center;
   font-size: 10px;
 }
 
 .spinner > div {
-  background-color: #333;
+  background-color: #ccc;
   height: 100%;
-  width: 6px;
+  width: 3px;
   display: inline-block;
+  margin-right:1px;
 
   -webkit-animation: stretchdelay 1.2s infinite ease-in-out;
   animation: stretchdelay 1.2s infinite ease-in-out;

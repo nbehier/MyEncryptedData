@@ -167,6 +167,25 @@ $(function(){
 
             if (this.model.get('editing') ) {
                 this.$el.html(this.templateEdit(this.model.toJSON() ) );
+                this.editor = CKEDITOR.replace('ed-edit-content', {
+                    'language': 'fr',
+                    toolbarGroups: [
+                        { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+                        { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
+                        { name: 'styles', groups: [ 'styles' ] },
+                        { name: 'insert', groups: [ 'insert' ] },
+                        { name: 'links', groups: [ 'links' ] },
+                        { name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
+                        { name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
+                        { name: 'forms', groups: [ 'forms' ] },
+                        { name: 'tools', groups: [ 'tools' ] },
+                        { name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
+                        { name: 'others', groups: [ 'others' ] },
+                        { name: 'colors', groups: [ 'colors' ] },
+                        { name: 'about', groups: [ 'about' ] }
+                    ],
+                    removeButtons: 'Underline,Subscript,Superscript,Cut,Copy,Scayt,Anchor,Image,SpecialChar,Maximize,Blockquote,Styles,About'
+                });
             }
             else {
                 this.$el.html(this.templateShow(this.model.toJSON() ) );
@@ -194,26 +213,6 @@ $(function(){
         },
         edit: function() {
             this.model.edit();
-
-            this.editor = CKEDITOR.replace('ed-edit-content', {
-                'language': 'fr',
-                toolbarGroups: [
-                    { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
-                    { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
-                    { name: 'styles', groups: [ 'styles' ] },
-                    { name: 'insert', groups: [ 'insert' ] },
-                    { name: 'links', groups: [ 'links' ] },
-                    { name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
-                    { name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
-                    { name: 'forms', groups: [ 'forms' ] },
-                    { name: 'tools', groups: [ 'tools' ] },
-                    { name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
-                    { name: 'others', groups: [ 'others' ] },
-                    { name: 'colors', groups: [ 'colors' ] },
-                    { name: 'about', groups: [ 'about' ] }
-                ],
-                removeButtons: 'Underline,Subscript,Superscript,Cut,Copy,Scayt,Anchor,Image,SpecialChar,Maximize,Blockquote,Styles,About'
-            });
         },
         cancel: function() {
             this.model.cancelEdition();
