@@ -36,6 +36,8 @@ abstract class File
 
     public function load($sYmlContent)
     {
+        $oYaml = array();
+
         try {
             $oYaml = Yaml::parse($sYmlContent);
 
@@ -49,6 +51,8 @@ abstract class File
         } catch (ParseException $e) {
             printf("Unable to parse the YAML string: %s", $e->getMessage());
         }
+
+        return $oYaml;
     }
 
     /**
@@ -72,7 +76,7 @@ abstract class File
             $this->setUpdatedAt();
         }
 
-        $aArray = $this->toArray();
+        $aArray = $this->toArray(true);
 
         try {
             $yaml = Yaml::dump($aArray, 2);
@@ -83,9 +87,8 @@ abstract class File
         }
     }
 
-    public function toArray()
+    public function toArray($withPrivateFields = false)
     {
-        //return get_object_vars($this);
         return array(
             'id' => $this->id,
             'title' => $this->title,

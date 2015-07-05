@@ -64,19 +64,26 @@ class DefaultController
         $sId = $request->get('id');
 
         if (!$sPassphrase) {
-            $error = array('message' => 'No passphrase given.');
+            $error = array('message' => $app['translator']->trans('DecryptMethodErrorNoPassphrase'));
             return $app->json($error, 400);
         }
 
         $decryptedFile = FileFinder::getFile($app['securefile.path'], $sId, $sPassphrase, $app['securefile.systempassphrase']);
         if ($decryptedFile === false) {
-            $error = array('message' => 'No document found with id ' . $sId . '.');
+            $error = array('message' => $app['translator']->trans('DecryptMethodErrorNoDocument', array('%id%', $sId)));
             return $app->json($error, 404);
         }
+        if (! $decryptedFile->checkWitness($app['securefile.witness'] ) ) {
+            $error = array('message' => $app['translator']->trans('DecryptMethodErrorIncorrectPassphrase'));
+            return $app->json($error, 403);
+        }
+
+        $aDecryptedFile = $decryptedFile->toArray(false);
 
         return $app->json(array(
             'content' => $decryptedFile->getContent(),
-            'data' => $decryptedFile->toArray()
+            'data' => $aDecryptedFile,
+            'message' => ''
         ));
     }
 
@@ -99,19 +106,20 @@ class DefaultController
         }
 
         if (empty($sPassphrase) ) {
-            $error = array('message' => 'No passphrase given.');
+            $error = array('message' => $app['translator']->trans('EncryptMethodErrorNoPassphrase'));
             return $app->json($error, 400);
         }
         if (empty($datas['title']) ) {
-            $error = array('message' => 'No title given.');
+            $error = array('message' => $app['translator']->trans('EncryptMethodErrorNoTitle'));
             return $app->json($error, 400);
         }
         if (empty($datas['authors'])) {
-            $error = array('message' => 'No author given.');
+            $error = array('message' => $app['translator']->trans('EncryptMethodErrorNoAuthor'));
             return $app->json($error, 400);
         }
 
         $datas['path'] = $app['securefile.path'];
+        $datas['witness'] = $app['securefile.witness'];
         $encryptedFile = FileFinder::saveFile(
             $datas,
             $sPassphrase,
@@ -120,7 +128,8 @@ class DefaultController
         );
 
         return $app->json(array(
-            'data' => $encryptedFile->toArray()
+            'data' => $encryptedFile->toArray(),
+            'message' => ''
         ));
     }
 
@@ -128,16 +137,22 @@ class DefaultController
     {
         $sId = $request->get('id');
         if (empty($sId) ) {
-            $error = array('message' => 'No document ID given.');
+            $error = array('message' => $app['translator']->trans('DeleteMethodErrorNoDocument'));
             return $app->json($error, 400);
         }
 
         $isSuccess = FileFinder::deleteFile($app['securefile.path'], $sId);
 
         if (! $isSuccess) {
-            $app->json(array('message' => 'Delete file impossible'), 400);
+            $app->json(array(
+                'message' => $app['translator']->trans('DeleteMethodError')),
+                400
+            );
         }
 
-        return $app->json(array('message' => 'Delete file with success'), 200);
+        return $app->json(array(
+            'message' => $app['translator']->trans('DeleteMethodSuccess')),
+            200
+        );
     }
 }

@@ -36,15 +36,26 @@
 
 <script type="text/template" id="ed-detail">
 <div class="email-content-header pure-g">
+    <% if (error) { %>
+    <div class="pure-u-1 pure-alert pure-alert-error">
+        <label><strong>Attention :</strong></label> <%= error %>
+    </div>
+    <% } %>
+    <% if (success) { %>
+    <div class="pure-u-1 pure-alert pure-alert-success">
+        <label><strong>Parfait !</strong></label> <%= success %>
+    </div>
+    <% } %>
+
     <div class="pure-u-1">
         <form class="pure-form" id="ed-form-decrypt">
-            <button type="submit" class="pure-button button-success">{{ 'DecryptButton'|trans }}</button>
+            <button type="submit" class="pure-button pure-button-success">{{ 'DecryptButton'|trans }}</button>
             <input type="password" placeholder="{{ 'PassphrasePlaceholder'|trans }}" class="pure-u-3-4" />
         </form>
     </div>
 
     <div class="pure-u-1">
-        <button id="ed-button-delete" class="pure-button button-error right">{{ 'DeleteButton'|trans }}</button>
+        <button id="ed-button-delete" class="pure-button pure-button-error right">{{ 'DeleteButton'|trans }}</button>
         <h1 class="email-content-title"><%= !title ? '{{ "EmptyTitle"|trans }}' : title %></h1>
         <p class="email-content-subtitle">
             {{ 'From'|trans }} <%= !authors ? '{{ "EmptyAuthors"|trans }}' : authors.join(', ') %>, {{ 'UpdatedAt'|trans }} <span><%= moment(updated_at).fromNow() %></span><br />
@@ -55,7 +66,7 @@
 
 <div class="email-content-body">
     <% if (!encrypt) { %>
-        <button id="ed-button-edit" class="pure-button button-warning">{{ 'EditButton'|trans }}</button>
+        <button id="ed-button-edit" class="pure-button pure-button-warning">{{ 'EditButton'|trans }}</button>
     <% } %>
     <%= content %>
 </div>
@@ -65,12 +76,13 @@
 <div class="email-content-header pure-g">
     <div class="pure-u-1">
         <form class="pure-form" id="ed-form-save">
-            <button type="submit" id="ed-button-save" class="pure-button button-success">{{ 'SaveButton'|trans }}</button>
+            <button type="submit" id="ed-button-save" class="pure-button pure-button-success">{{ 'SaveButton'|trans }}</button>
             <input type="password" placeholder="{{ 'PassphrasePlaceholder'|trans }}" class="pure-u-3-4" />
         </form>
     </div>
 
     <div class="pure-u-1">
+        <button id="ed-button-cancel" class="pure-button pure-button-secondary right">{{ 'CancelButton'|trans }}</button>
         <input type="text" id="ed-edit-title" placeholder="{{ "EmptyTitle"|trans }}" class="pure-u-4-5 email-content-title" value="<%- title %>" />
         <p class="email-content-subtitle">
             {{ 'From'|trans }} <input type="text" id="ed-edit-authors" class="pure-u-2-5" placeholder="{{ "EmptyAuthors"|trans }}" value="<%= !authors ? '' : authors.join(', ') %>" />
@@ -82,7 +94,6 @@
 
 
 <div class="email-content-body">
-    <button id="ed-button-cancel" class="pure-button button-secondary">{{ 'CancelButton'|trans }}</button>
     <textarea id="ed-edit-content" class="pure-u-4-5"><%= content %></textarea>
 </div>
 </script>
@@ -91,7 +102,7 @@
 <a href="#" class="nav-menu-button">{{ 'Menu'|trans }}</a>
 
 <div class="nav-inner">
-    <button class="primary-button pure-button" id="ed-new-trigger">{{ 'CreateDocumentButton'|trans }}</button>
+    <button class="pure-button pure-button-selected" id="ed-new-trigger">{{ 'CreateDocumentButton'|trans }}</button>
 
     <div class="pure-menu" style="display:none">
         <ul class="pure-menu-list">

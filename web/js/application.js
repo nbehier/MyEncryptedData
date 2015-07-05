@@ -34,7 +34,9 @@ $(function(){
                 active: false,
                 editing: false,
                 encrypt: true,
-                updating: false
+                updating: false,
+                error: '',
+                success: ''
             };
         },
         activate: function() {
@@ -58,18 +60,21 @@ $(function(){
                 beforeSend: function() {
                     this.set({ updating: true });
                 }.bind(this),
-                complete: function() {
-                    this.set({ updating: false });
-                }.bind(this),
                 success: function(data) {
-                    this.set({ 'content': data.content, encrypt: false });
+                    this.set({
+                        'content': data.content,
+                        'encrypt': false,
+                        'updating': false,
+                        'error': '',
+                        'success': data.message
+                    });
                 }.bind(this),
                 error: function(xhr, status, err) {
-                    console.error(
-                        '/documents/' + this.id + '/decrypt',
-                        status,
-                        err.toString()
-                    );
+                    this.set({
+                        'error': xhr.responseJSON.message,
+                        'updating': false,
+                        'success': ''
+                    });
                 }.bind(this)
             });
         },
@@ -88,9 +93,6 @@ $(function(){
                 beforeSend: function() {
                     this.set({ updating: true });
                 }.bind(this),
-                complete: function() {
-                    this.set({ updating: false });
-                }.bind(this),
                 success: function(response) {
                     this.set({
                         'id': response.data.id,
@@ -99,15 +101,17 @@ $(function(){
                         'title': response.data.title,
                         'authors': response.data.authors,
                         'created_at': response.data.created_at,
-                        'updated_at': response.data.updated_at
+                        'updated_at': response.data.updated_at,
+                        'success': response.message,
+                        'error': ''
                     });
                 }.bind(this),
                 error: function(xhr, status, err) {
-                    console.error(
-                        '/documents/' + this.id + '/decrypt',
-                        status,
-                        err.toString()
-                    );
+                    this.set({
+                        'error': xhr.responseJSON.message,
+                        'updating': false,
+                        'success': ''
+                    });
                 }.bind(this)
             });
         },
@@ -191,7 +195,7 @@ $(function(){
         edit: function() {
             this.model.edit();
 
-            CKEDITOR.replace('ed-edit-content', {
+            this.editor = CKEDITOR.replace('ed-edit-content', {
                 'language': 'fr',
                 toolbarGroups: [
                     { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
@@ -216,11 +220,15 @@ $(function(){
         },
         save: function(e) {
             e.preventDefault();
+
             var passphrase = this.$('#ed-form-save input').get(0).value.trim();
             var title = $('#ed-edit-title').val().trim();
             var desc = $('#ed-edit-desc').val().trim();
             var authors = $('#ed-edit-authors').val().trim();
+
+            this.editor.updateElement();
             var content = $('#ed-edit-content').val().trim();
+
             if (!passphrase || !title) {
               return;
             }
