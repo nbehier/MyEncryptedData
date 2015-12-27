@@ -147,7 +147,28 @@ $(function(){
             _.extend(this, singleSelect);
         },
         comparator: function(ed) {
-            return ed.title;
+            var str = ed.get('title').toUpperCase()
+            return this.sansAccent(str);
+        },
+        // @see http://www.finalclap.com/faq/257-javascript-supprimer-remplacer-accent
+        sansAccent: function(str){
+            var accent = [
+                /[\300-\306]/g, /[\340-\346]/g, // A, a
+                /[\310-\313]/g, /[\350-\353]/g, // E, e
+                /[\314-\317]/g, /[\354-\357]/g, // I, i
+                /[\322-\330]/g, /[\362-\370]/g, // O, o
+                /[\331-\334]/g, /[\371-\374]/g, // U, u
+                /[\321]/g, /[\361]/g, // N, n
+                /[\307]/g, /[\347]/g, // C, c
+            ];
+            var noaccent = ['A','a','E','e','I','i','O','o','U','u','N','n','C','c'];
+
+            //var str = this;
+            for(var i = 0; i < accent.length; i++){
+                str = str.replace(accent[i], noaccent[i]);
+            }
+
+            return str;
         }
     });
 
@@ -349,9 +370,11 @@ $(function(){
             this.listenTo(EDs, 'reset', this.addAll);
             this.listenTo(EDs, 'all', this.render);
             this.listenTo(EDs, 'select:one', this.displayDetail);
+            this.listenTo(EDs, 'sort', this.sort);
             this.listenTo(Backbone, 'documents:newToCreate', this.createOneDocument);
 
             EDs.fetch();
+            EDs.sort();
         },
         render: function() {
             var toolbar = new EDToolbarView();
@@ -373,6 +396,10 @@ $(function(){
             EDs.add(oDocument);
             this.displayDetail(oDocument);
             oDocument.create();
+        },
+        sort: function() {
+            this.edList.empty();
+            this.addAll();
         }
     });
 
