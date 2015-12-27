@@ -37,7 +37,8 @@ $(function(){
                 updating: false,
                 error: '',
                 success: '',
-                forceUpdatePassphrase: false
+                forceUpdatePassphrase: false,
+                hide: false
             };
         },
         activate: function() {
@@ -146,6 +147,59 @@ $(function(){
             var singleSelect = new Backbone.Picky.SingleSelect(this);
             _.extend(this, singleSelect);
         },
+        filterByAuthors: function(authorsName) {
+            var _this = this;
+
+            if (_.isEmpty(authorsName) ) {
+                _.each(_this.models, function(mod, idx, list) {
+                    _this.at(idx).set('hide', false);
+                });
+            }
+            else {
+                authorsName = _this.normalizeArrayValues(authorsName );
+
+                _.each(_this.models, function(mod, idx, list) {
+                    var aAuthors = _this.normalizeArrayValues(mod.get('authors') );
+                    var hasAllAuthors = _.difference(authorsName, aAuthors);
+
+                    if (_.isEmpty(hasAllAuthors) ) {
+                        _this.at(idx).set('hide', false);
+                    }
+                    else {
+                        _this.at(idx).set('hide', true);
+                    }
+                });
+
+            }
+        },
+        getAllAuthors: function() {
+            var json = [];
+            var knownAuthors = {};
+
+            _.each(this.models, function(mod){
+                var aAuthors = mod.get('authors');
+                _.each(aAuthors, function(name){
+                    name = name.toUpperCase();
+
+                    if (_.has(knownAuthors, name) ) {
+                        knownAuthors[name] = knownAuthors[name] + 1;
+                    }
+                    else {
+                        knownAuthors[name ] = 1;
+                    }
+                });
+            });
+
+            _.each(knownAuthors, function(val, key) {
+                json.push({
+                    name: key.toLowerCase(),
+                    count: val
+                });
+            });
+
+            return _.sortBy(json, 'name');
+            //[{ 'name': 'Nicolas', count: 3 },{ 'name': 'Camille', count: 2 }];
+        },
         comparator: function(ed) {
             var str = ed.get('title').toUpperCase()
             return this.sansAccent(str);
@@ -169,6 +223,12 @@ $(function(){
             }
 
             return str;
+        },
+        normalizeArrayValues: function(arr) {
+            var _this = this;
+            return _.map(arr, function(val) {
+                return _this.sansAccent(val.toUpperCase() );
+            });
         }
     });
 
@@ -343,16 +403,42 @@ $(function(){
         tagName:  "div",
         template: _.template($('#ed-toolbar').html() ),
         events: {
-            "click #ed-new-trigger" : "new"
+            "click #ed-new-trigger" : "new",
+            "click #authorsFilter .pure-menu-link" : "authorFilter"
         },
         initialize: function() {
         },
         render: function() {
-            this.$el.html(this.template() );
+            var authors = EDs.getAllAuthors();
+            this.$el.html(this.template({ authors: authors }));
             return this;
         },
         new: function() {
             Backbone.trigger('documents:newToCreate');
+        },
+        authorFilter: function(e) {
+            var $e = $(e.target);
+            var authorName = $e.data('author');
+            var $container = $('#authorsFilter');
+            var sActiveFilters = $container.data('filter');
+            var aActiveFilters = ( _.isString(sActiveFilters) && sActiveFilters != '' ? sActiveFilters.split(',') : [] );
+
+            if (_.isUndefined(authorName) || _.isEmpty(authorName) ) {
+                return false;
+            }
+
+            if ($e.hasClass('active') ) {
+                aActiveFilters = _.without(aActiveFilters, authorName);
+                $e.removeClass('active');
+            } else {
+                aActiveFilters.push(authorName);
+                aActiveFilters = _.uniq(aActiveFilters);
+                $e.addClass('active');
+            }
+            sActiveFilters = ( _.isEmpty(aActiveFilters) ? '' : aActiveFilters.join(',') );
+            $container.data('filter', sActiveFilters );
+
+            Backbone.trigger('documents:filter', aActiveFilters);
         }
     });
 
@@ -368,15 +454,17 @@ $(function(){
 
             this.listenTo(EDs, 'add', this.addOne);
             this.listenTo(EDs, 'reset', this.addAll);
-            this.listenTo(EDs, 'all', this.render);
+            //this.listenTo(EDs, 'all', this.render);
             this.listenTo(EDs, 'select:one', this.displayDetail);
             this.listenTo(EDs, 'sort', this.sort);
+
             this.listenTo(Backbone, 'documents:newToCreate', this.createOneDocument);
+            this.listenTo(Backbone, 'documents:filter', this.filter);
 
             EDs.fetch();
             EDs.sort();
         },
-        render: function() {
+        renderToolbar: function() {
             var toolbar = new EDToolbarView();
             this.edToolbar.html(toolbar.render().el );
         },
@@ -390,6 +478,7 @@ $(function(){
         },
         addAll: function() {
             EDs.each(this.addOne, this);
+            this.renderToolbar();
         },
         createOneDocument: function() {
             var oDocument = new ED();
@@ -400,6 +489,9 @@ $(function(){
         sort: function() {
             this.edList.empty();
             this.addAll();
+        },
+        filter: function(authorsName) {
+            EDs.filterByAuthors(authorsName);
         }
     });
 

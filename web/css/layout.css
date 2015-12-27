@@ -87,8 +87,8 @@ a {
     border: none;
     text-align: left;
 }
-    #nav .pure-menu-link:hover,
-    #nav .pure-menu-link:focus {
+    #nav .pure-menu-link.active,
+    #nav .pure-menu-link:hover {
         background: rgb(55, 60, 90);
     }
     #nav .pure-menu-link {
@@ -99,6 +99,7 @@ a {
         border-bottom: none;
         font-size:110%;
         color: rgb(75, 113, 151);
+        margin-top: 2em;
     }
 
 
@@ -158,6 +159,9 @@ a {
 }
 .email-item-unread {
     border-left: 6px solid #1b98f8;
+}
+.email-item.hide {
+    display: none;
 }
 
 /* Email Content Styles */
