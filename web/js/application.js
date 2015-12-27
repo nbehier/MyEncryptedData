@@ -145,6 +145,9 @@ $(function(){
         initialize: function() {
             var singleSelect = new Backbone.Picky.SingleSelect(this);
             _.extend(this, singleSelect);
+        },
+        comparator: function(ed) {
+            return ed.title;
         }
     });
 

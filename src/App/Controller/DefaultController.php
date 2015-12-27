@@ -44,7 +44,6 @@ class DefaultController
 
     public function indexAction(Request $request, Application $app)
     {
-        //$this->logger->debug('Executing DefaultController::indexAction');
         return $this->twig->render('index.twig');
     }
 
